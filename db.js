@@ -40,38 +40,40 @@ const Product = Conn.define('Product', {
   listing_price: { type: Sequelize.STRING, allowNull: true },
 })
 
+// Relationship
 Supplier.hasMany(Product)
 
-Conn.sync({ force: true })
-  .then(() => {
-    _.times(10, () => {
-      return Supplier.create({
-        code: Faker.random.words(),
-        name: Faker.company.companyName(),
-        tax_code: Faker.company.bs(),
-        tel: Faker.phone.phoneNumber(),
-        fax: Faker.phone.phoneNumber(),
-        timezone: Faker.random.locale(),
-        email: Faker.internet.email(),
-        address: Faker.address.streetAddress(),
-        is_default_contact: Faker.random.boolean(),
-        bankinfo: Faker.address.streetName(),
-      }).then(supplier => {
-        return supplier.createProduct({
-          code: Faker.commerce.product(),
-          name: Faker.commerce.productName(),
-          brand: Faker.commerce.productAdjective(),
-          model: Faker.commerce.department(),
-          unit: Faker.random.word(),
-          specs: Faker.lorem.sentences(),
-          part_no: Faker.random.words(),
-          listing_price: Faker.commerce.price(),
-        })
-      })
-    })
-  })
-  .catch(err => {
-    console.log(err)
-  })
+// Data Genaration
+// Conn.sync({ force: true })
+//   .then(() => {
+//     _.times(10, () => {
+//       return Supplier.create({
+//         code: Faker.random.words(),
+//         name: Faker.company.companyName(),
+//         tax_code: Faker.company.bs(),
+//         tel: Faker.phone.phoneNumber(),
+//         fax: Faker.phone.phoneNumber(),
+//         timezone: Faker.random.locale(),
+//         email: Faker.internet.email(),
+//         address: Faker.address.streetAddress(),
+//         is_default_contact: Faker.random.boolean(),
+//         bankinfo: Faker.address.streetName(),
+//       }).then(supplier => {
+//         return supplier.createProduct({
+//           code: Faker.commerce.product(),
+//           name: Faker.commerce.productName(),
+//           brand: Faker.commerce.productAdjective(),
+//           model: Faker.commerce.department(),
+//           unit: Faker.random.word(),
+//           specs: Faker.lorem.sentences(),
+//           part_no: Faker.random.words(),
+//           listing_price: Faker.commerce.price(),
+//         })
+//       })
+//     })
+//   })
+//   .catch(err => {
+//     console.log(err)
+//   })
 
 export default Conn
