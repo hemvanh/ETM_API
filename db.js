@@ -2,54 +2,76 @@ import Sequelize from 'sequelize'
 import _ from 'lodash'
 import Faker from 'faker'
 
-const Conn = new Sequelize('bb55689_etmlive', 'bb55689_etm', 'Lollipop!@#', {
-  host: '116.193.77.72',
+const Conn = new Sequelize('etm_api', 'etm', 'lollipop', {
+  host: 'etm.c0f9gwleomit.ap-southeast-1.rds.amazonaws.com',
   dialect: 'mysql',
   pool: {
+    port: 3306,
     max: 5,
     min: 0,
-    //accquire: 30000,
-    idle: 1,
-    
+    accquire: 60000,
+    idle: 20000,
   },
 })
 
 const Supplier = Conn.define('Supplier', {
-  supplier_id: { type: Sequelize.INTEGER, allowNull: false },
-  supplier_code: { type: Sequelize.STRING, allowNull: false },
-  supplier_name: { type: Sequelize.STRING, allowNull: false },
-  supplier_tax_code: { type: Sequelize.STRING, allowNull: true },
-  supplier_tel: { type: Sequelize.STRING, allowNull: true },
-  supplier_fax: { type: Sequelize.STRING, allowNull: true },
-  supplier_timezone: { type: Sequelize.STRING, allowNull: true },
-  supplier_email: { type: Sequelize.STRING, allowNull: true },
-  supplier_address: { type: Sequelize.STRING, allowNull: true },
-  is_supplier_default_contact: { type: Sequelize.INTEGER, allowNull: true },
-  supplier_bankinfo: { type: Sequelize.STRING, allowNull: true },
+  //id: { type: Sequelize.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
+  code: { type: Sequelize.STRING, allowNull: false },
+  name: { type: Sequelize.STRING, allowNull: false },
+  tax_code: { type: Sequelize.STRING, allowNull: true },
+  tel: { type: Sequelize.STRING, allowNull: true },
+  fax: { type: Sequelize.STRING, allowNull: true },
+  timezone: { type: Sequelize.STRING, allowNull: true },
+  email: { type: Sequelize.STRING, allowNull: true },
+  address: { type: Sequelize.STRING, allowNull: true },
+  is_default_contact: { type: Sequelize.INTEGER, allowNull: true },
+  bankinfo: { type: Sequelize.STRING, allowNull: true },
 })
 
 const Product = Conn.define('Product', {
-  product_id: { type: Sequelize.INTEGER, allowNull: false },
-  product_code: { type: Sequelize.STRING, allowNull: false },
-  product_name: { type: Sequelize.STRING, allowNull: false },
-  product_branch: { type: Sequelize.STRING, allowNull: true },
-  product_model: { type: Sequelize.STRING, allowNull: true },
-  product_unit: { type: Sequelize.STRING, allowNull: true },
-  product_specs: { type: Sequelize.TEXT, allowNull: true },
-  product_part_no: { type: Sequelize.STRING, allowNull: true },
+  //id: { type: Sequelize.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
+  code: { type: Sequelize.STRING, allowNull: false },
+  name: { type: Sequelize.STRING, allowNull: false },
+  brand: { type: Sequelize.STRING, allowNull: true },
+  model: { type: Sequelize.STRING, allowNull: true },
+  unit: { type: Sequelize.STRING, allowNull: true },
+  specs: { type: Sequelize.TEXT, allowNull: true },
+  part_no: { type: Sequelize.STRING, allowNull: true },
   listing_price: { type: Sequelize.STRING, allowNull: true },
 })
 
 Supplier.hasMany(Product)
 
-Conn.sync({ force: true }).then(() => {
-  _.times(10, () => {
-    return Supplier.create({
-      supplier_code: Faker.name.lastName(),
-      supplier_name: Faker.name.firstName(),
-      supplier_email: Faker.internet.email(),
+Conn.sync({ force: true })
+  .then(() => {
+    _.times(10, () => {
+      return Supplier.create({
+        code: Faker.random.words(),
+        name: Faker.company.companyName(),
+        tax_code: Faker.company.bs(),
+        tel: Faker.phone.phoneNumber(),
+        fax: Faker.phone.phoneNumber(),
+        timezone: Faker.random.locale(),
+        email: Faker.internet.email(),
+        address: Faker.address.streetAddress(),
+        is_default_contact: Faker.random.boolean(),
+        bankinfo: Faker.address.streetName(),
+      }).then(supplier => {
+        return supplier.createProduct({
+          code: Faker.commerce.product(),
+          name: Faker.commerce.productName(),
+          brand: Faker.commerce.productAdjective(),
+          model: Faker.commerce.department(),
+          unit: Faker.random.word(),
+          specs: Faker.lorem.sentences(),
+          part_no: Faker.random.words(),
+          listing_price: Faker.commerce.price(),
+        })
+      })
     })
   })
-})
+  .catch(err => {
+    console.log(err)
+  })
 
 export default Conn
