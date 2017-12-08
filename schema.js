@@ -1,7 +1,5 @@
 import { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList } from 'graphql'
 import db from './db'
-import { arch } from 'os'
-import { debug } from 'util'
 
 const Supplier = new GraphQLObjectType({
   name: 'Supplier',
