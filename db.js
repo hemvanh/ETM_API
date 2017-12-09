@@ -2,9 +2,11 @@ import Sequelize from 'sequelize'
 import _ from 'lodash'
 import Faker from 'faker'
 
+const Op = Sequelize.Op
 const Conn = new Sequelize('etm_api', 'etm', 'lollipop', {
   host: 'etm.c0f9gwleomit.ap-southeast-1.rds.amazonaws.com',
   dialect: 'mysql',
+  operatorsAliases: Op, // use Sequelize.Op
   pool: {
     port: 3306,
     max: 5,
