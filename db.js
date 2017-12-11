@@ -14,34 +14,56 @@ const Conn = new Sequelize('etm_api', 'etm', 'lollipop', {
   },
 })
 
-const Supplier = Conn.define('Supplier', {
-  //id: { type: Sequelize.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
+const Client = Conn.define('client', {
   code: { type: Sequelize.STRING, allowNull: false },
   name: { type: Sequelize.STRING, allowNull: false },
   tax_code: { type: Sequelize.STRING, allowNull: true },
+  invoice_addr: { type: Sequelize.STRING, allowNull: true },
+  delivery_addr: { type: Sequelize.STRING, allowNull: true },
   tel: { type: Sequelize.STRING, allowNull: true },
   fax: { type: Sequelize.STRING, allowNull: true },
-  timezone: { type: Sequelize.STRING, allowNull: true },
-  email: { type: Sequelize.STRING, allowNull: true },
-  address: { type: Sequelize.STRING, allowNull: true },
-  is_default_contact: { type: Sequelize.INTEGER, allowNull: true },
-  bankinfo: { type: Sequelize.STRING, allowNull: true },
 })
 
-const Product = Conn.define('Product', {
-  //id: { type: Sequelize.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
-  code: { type: Sequelize.STRING, allowNull: false },
-  name: { type: Sequelize.STRING, allowNull: false },
-  brand: { type: Sequelize.STRING, allowNull: true },
-  model: { type: Sequelize.STRING, allowNull: true },
-  unit: { type: Sequelize.STRING, allowNull: true },
-  specs: { type: Sequelize.TEXT, allowNull: true },
-  part_no: { type: Sequelize.STRING, allowNull: true },
-  listing_price: { type: Sequelize.STRING, allowNull: true },
-})
+// const Supplier = Conn.define('supplier', {
+//   code: { type: Sequelize.STRING, allowNull: false },
+//   name: { type: Sequelize.STRING, allowNull: false },
+//   tax_code: { type: Sequelize.STRING, allowNull: true },
+//   tel: { type: Sequelize.STRING, allowNull: true },
+//   fax: { type: Sequelize.STRING, allowNull: true },
+//   timezone: { type: Sequelize.STRING, allowNull: true },
+//   email: { type: Sequelize.STRING, allowNull: true },
+//   address: { type: Sequelize.STRING, allowNull: true },
+//   is_default_contact: { type: Sequelize.INTEGER, allowNull: true },
+//   bankinfo: { type: Sequelize.STRING, allowNull: true },
+// })
+
+// const Product = Conn.define('product', {
+//   code: { type: Sequelize.STRING, allowNull: false },
+//   name: { type: Sequelize.STRING, allowNull: false },
+//   brand: { type: Sequelize.STRING, allowNull: true },
+//   model: { type: Sequelize.STRING, allowNull: true },
+//   unit: { type: Sequelize.STRING, allowNull: true },
+//   specs: { type: Sequelize.TEXT, allowNull: true },
+//   part_no: { type: Sequelize.STRING, allowNull: true },
+//   listing_price: { type: Sequelize.STRING, allowNull: true },
+// })
+
+// Client.sync({ force: true }).then(() => {
+//   _.times(10, () => {
+//     return Client.create({
+//       code: Faker.name(),
+//       name: Faker.company.bsNoun(),
+//       tax_code: Faker.company.bs(),
+//       invoice_addr: Faker.address.streetAddress(),
+//       delivery_addr: Faker.address.streetAddress(),
+//       tel: Faker.phone.phoneNumber(),
+//       fax: Faker.phone.phoneNumber(),
+//     })
+//   })
+// })
 
 // Relationship
-Supplier.hasMany(Product)
+//Supplier.hasMany(Product)
 
 // Data Genaration
 // Conn.sync({ force: true })
