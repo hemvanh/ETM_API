@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize'
-import _ from 'lodash'
-import Faker from 'faker'
+// import _ from 'lodash'
+// import Faker from 'faker'
 
 const Conn = new Sequelize('etm_api', 'etm', 'lollipop', {
   host: 'etm.c0f9gwleomit.ap-southeast-1.rds.amazonaws.com',
