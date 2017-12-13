@@ -15,13 +15,13 @@ const Conn = new Sequelize('etm_api', 'etm', 'lollipop', {
 })
 
 const Client = Conn.define('client', {
-  code: { type: Sequelize.STRING, allowNull: false },
-  name: { type: Sequelize.STRING, allowNull: false },
-  tax_code: { type: Sequelize.STRING, allowNull: true },
-  invoice_addr: { type: Sequelize.STRING, allowNull: true },
-  delivery_addr: { type: Sequelize.STRING, allowNull: true },
-  tel: { type: Sequelize.STRING, allowNull: true },
-  fax: { type: Sequelize.STRING, allowNull: true },
+  code: {type: Sequelize.STRING, allowNull: false},
+  name: {type: Sequelize.STRING, allowNull: false},
+  tax_code: {type: Sequelize.STRING, allowNull: true},
+  invoice_addr: {type: Sequelize.STRING, allowNull: true},
+  delivery_addr: {type: Sequelize.STRING, allowNull: true},
+  tel: {type: Sequelize.STRING, allowNull: true},
+  fax: {type: Sequelize.STRING, allowNull: true},
 })
 
 // const Supplier = Conn.define('supplier', {

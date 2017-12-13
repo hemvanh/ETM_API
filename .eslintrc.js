@@ -22,5 +22,6 @@ module.exports = {
       },
     ],
     'comma-dangle': ['error', 'always-multiline'],
+    'no-console': 0,
   },
 }
