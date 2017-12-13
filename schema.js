@@ -1,4 +1,12 @@
-import {GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema, GraphQLList} from 'graphql'
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLSchema,
+  GraphQLList,
+  GraphQLInputObjectType,
+  GraphQLNonNull,
+} from 'graphql'
 
 import db from './db'
 
@@ -58,6 +66,36 @@ const Client = new GraphQLObjectType({
     }
   },
 })
+const ClientInput = new GraphQLInputObjectType({
+  name: 'ClientInput',
+  description: 'This is Client Input Object',
+  fields: () => ({
+    id: {
+      type: GraphQLInt,
+    },
+    code: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    tax_code: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    invoice_addr: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    delivery_addr: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    tel: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    fax: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  }),
+})
 
 const Query = new GraphQLObjectType({
   name: 'RootQuery',
@@ -86,29 +124,30 @@ const Mutation = new GraphQLObjectType({
       saveClient: {
         type: Client,
         args: {
-          id: {type: GraphQLInt},
-          code: {type: GraphQLString},
+          input: {
+            type: ClientInput,
+          },
         },
-        resolve(_, args) {
+        resolve(_, {input}) {
           return db.models.client
             .update(
               {
-                code: args.code,
-                // name: args.name,
-                // tax_code: args.tax_code,
-                // invoice_addr: args.invoice_addr,
-                // delivery_addr: args.delivery_addr,
-                // tel: args.tel,
-                // fax: args.fax,
+                code: input.code,
+                name: input.name,
+                tax_code: input.tax_code,
+                invoice_addr: input.invoice_addr,
+                delivery_addr: input.delivery_addr,
+                tel: input.tel,
+                fax: input.fax,
               },
               {
                 where: {
-                  id: args.id,
+                  id: input.id,
                 },
               }
             )
             .then(() => {
-              return db.models.client.findById(args.id)
+              return db.models.client.findById(input.id)
             })
         },
       },
