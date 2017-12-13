@@ -107,9 +107,8 @@ const Mutation = new GraphQLObjectType({
                 },
               }
             )
-            .then(res => {
-              console.log(res[1])
-              //return res[1]
+            .then(() => {
+              return db.models.client.findById(args.id)
             })
         },
       },
