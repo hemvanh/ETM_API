@@ -71,6 +71,7 @@ const ClientInput = new GraphQLInputObjectType({
   description: 'This is Client Input Object',
   fields: () => ({
     id: {
+      // no need for GraphQLNonNull wrap, coz this Input's id is used in upsert later
       type: GraphQLInt,
     },
     code: {
@@ -130,8 +131,9 @@ const Mutation = new GraphQLObjectType({
         },
         resolve(_, {input}) {
           return db.models.client
-            .update(
+            .upsert(
               {
+                id: input.id,
                 code: input.code,
                 name: input.name,
                 tax_code: input.tax_code,
@@ -139,12 +141,12 @@ const Mutation = new GraphQLObjectType({
                 delivery_addr: input.delivery_addr,
                 tel: input.tel,
                 fax: input.fax,
-              },
-              {
-                where: {
-                  id: input.id,
-                },
               }
+              // {
+              //   where: {
+              //     id: input.id,
+              //   },
+              // }
             )
             .then(() => {
               return db.models.client.findById(input.id)
