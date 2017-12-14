@@ -9,6 +9,8 @@ import {
 } from 'graphql'
 
 import db from './db'
+import Sequelize from 'sequelize'
+const Op = Sequelize.Op
 
 const Client = new GraphQLObjectType({
   name: 'Client',
@@ -119,7 +121,7 @@ const Query = new GraphQLObjectType({
 
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
-  description: 'Saving the Client',
+  description: 'Save/Add/Delete a Client',
   fields() {
     return {
       saveClient: {
@@ -151,6 +153,23 @@ const Mutation = new GraphQLObjectType({
             .then(() => {
               return db.models.client.findById(input.id)
             })
+        },
+      },
+      deleteClient: {
+        type: GraphQLInt,
+        args: {
+          ids: {
+            type: new GraphQLList(GraphQLInt),
+          },
+        },
+        resolve(_, {ids}) {
+          return db.models.client.destroy({
+            where: {
+              id: {
+                [Op.in]: ids,
+              },
+            },
+          })
         },
       },
     }
