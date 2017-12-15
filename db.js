@@ -10,7 +10,7 @@ const Conn = new Sequelize('etm_api', 'etm', 'lollipop', {
   pool: {
     port: 3306,
     max: 5,
-    min: 0,
+    min: 1,
     accquire: 60000,
     idle: 20000,
   },
