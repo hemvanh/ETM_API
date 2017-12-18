@@ -16,7 +16,7 @@
     "graphql": "^0.11.7",
     "lodash": "^4.17.4",
     "mysql2": "^1.5.1",
-    "sequelize": "^4.27.0"
+    "sequelize": "^4.28.5"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

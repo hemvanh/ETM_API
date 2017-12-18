@@ -5,7 +5,10 @@ import Sequelize from 'sequelize'
 const Op = Sequelize.Op
 const Conn = new Sequelize('etm_api', 'etm', 'lollipop', {
   host: 'etm.c0f9gwleomit.ap-southeast-1.rds.amazonaws.com',
+  // const Conn = new Sequelize('bb55689_api', 'bb55689_api', 'Lollipop!@#', {
+  //   host: '116.193.77.72',
   dialect: 'mysql',
+  logging: false,
   operatorsAliases: Op, // use Sequelize.Op
   pool: {
     port: 3306,
@@ -15,7 +18,6 @@ const Conn = new Sequelize('etm_api', 'etm', 'lollipop', {
     idle: 20000,
   },
 })
-
 const Client = Conn.define('client', {
   code: {type: Sequelize.STRING, allowNull: false},
   name: {type: Sequelize.STRING, allowNull: false},
@@ -25,6 +27,32 @@ const Client = Conn.define('client', {
   tel: {type: Sequelize.STRING, allowNull: true},
   fax: {type: Sequelize.STRING, allowNull: true},
 })
+
+Conn.authenticate()
+
+// import mysql from 'mysql'
+// var Conn = mysql.createConnection({
+//   host: '116.193.77.72',
+//   user: 'bb55689_etm',
+//   password: 'Lollipop!@#',
+//   database: 'bb55689_etmdev',
+// })
+
+// Conn.connect()
+// Conn.query('SELECT * from clients', function(error, results) {
+//   if (error) throw error
+//   console.log('The solution is: ', results)
+// })
+
+// .then(() => {
+//   console.log('Connection has been established successfully.')
+// })
+// .catch(err => {
+//   console.error('Unable to connect to the database:', err)
+// })
+// Conn.sync({force: true}).catch(err => {
+//   console.log(err)
+// })
 
 // const Supplier = Conn.define('supplier', {
 //   code: { type: Sequelize.STRING, allowNull: false },
