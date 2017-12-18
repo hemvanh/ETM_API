@@ -65,9 +65,58 @@ const Client = new GraphQLObjectType({
           return client.fax
         },
       },
+      contacts: {
+        type: new GraphQLList(Contact),
+        args: {
+          clientId: {type: GraphQLInt},
+        },
+        resolve(root, args) {
+          return db.models.contact.findAll({where: args})
+        },
+      },
     }
   },
 })
+
+const Contact = new GraphQLObjectType({
+  name: 'Contact',
+  description: 'This is a Contact',
+  fields: () => {
+    return {
+      id: {
+        type: GraphQLInt,
+        resolve(contact) {
+          return contact.id
+        },
+      },
+      name: {
+        type: GraphQLString,
+        resolve(contact) {
+          return contact.name
+        },
+      },
+      tel: {
+        type: GraphQLString,
+        resolve(contact) {
+          return contact.tel
+        },
+      },
+      email: {
+        type: GraphQLString,
+        resolve(contact) {
+          return contact.email
+        },
+      },
+      position: {
+        type: GraphQLString,
+        resolve(contact) {
+          return contact.position
+        },
+      },
+    }
+  },
+})
+
 const ClientInput = new GraphQLInputObjectType({
   name: 'ClientInput',
   description: 'This is Client Input Object',

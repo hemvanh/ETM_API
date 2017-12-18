@@ -18,6 +18,7 @@ const Conn = new Sequelize('etm_api', 'etm', 'lollipop', {
     idle: 20000,
   },
 })
+
 const Client = Conn.define('client', {
   code: {type: Sequelize.STRING, allowNull: false},
   name: {type: Sequelize.STRING, allowNull: false},
@@ -28,7 +29,24 @@ const Client = Conn.define('client', {
   fax: {type: Sequelize.STRING, allowNull: true},
 })
 
-Conn.authenticate()
+const Contact = Conn.define('contact', {
+  name: {type: Sequelize.STRING, allowNull: false},
+  tel: {type: Sequelize.STRING, allowNull: true},
+  email: {type: Sequelize.STRING, allowNull: true},
+  position: {type: Sequelize.STRING, allowNull: true},
+  note: {type: Sequelize.STRING, allowNull: true},
+})
+
+Contact.belongsTo(Client)
+//Conn.authenticate()
+
+// Conn.sync({force: true})
+//   .then(() => {
+//     console.log('Everything is OK !!!')
+//   })
+//   .catch(err => {
+//     console.error('DB Failure:', err)
+//   })
 
 // import mysql from 'mysql'
 // var Conn = mysql.createConnection({
