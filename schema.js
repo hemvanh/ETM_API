@@ -205,6 +205,13 @@ const Query = new GraphQLObjectType({
           return db.models.client.findAll({where: args})
         },
       },
+      getAllContacts: {
+        description: 'List all Contacts',
+        type: new GraphQLList(Contact),
+        resolve() {
+          return db.models.contact.findAll()
+        },
+      },
     }
   },
 })
