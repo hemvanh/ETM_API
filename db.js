@@ -8,7 +8,6 @@ const Conn = new Sequelize('etm_api', 'etm', 'lollipop', {
   // const Conn = new Sequelize('bb55689_api', 'bb55689_api', 'Lollipop!@#', {
   //   host: '116.193.77.72',
   dialect: 'mysql',
-  logging: false,
   operatorsAliases: Op, // use Sequelize.Op
   pool: {
     port: 3306,

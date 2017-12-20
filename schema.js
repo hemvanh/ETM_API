@@ -119,6 +119,12 @@ const Contact = new GraphQLObjectType({
           return contact.position
         },
       },
+      note: {
+        type: GraphQLString,
+        resolve(contact) {
+          return contact.note
+        },
+      },
     }
   },
 })
