@@ -144,19 +144,48 @@ const ClientInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLString),
     },
     tax_code: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
     },
     invoice_addr: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
     },
     delivery_addr: {
+      type: GraphQLString,
+    },
+    tel: {
+      type: GraphQLString,
+    },
+    fax: {
+      type: GraphQLString,
+    },
+    contacts: {
+      type: new GraphQLList(ContactInput),
+    },
+  }),
+})
+
+const ContactInput = new GraphQLInputObjectType({
+  name: 'ContactInput',
+  description: 'This is Contact Input Object',
+  fields: () => ({
+    id: {
+      // no need for GraphQLNonNull wrap, coz this Input's id is used in upsert later
+      type: GraphQLInt,
+    },
+    name: {
       type: new GraphQLNonNull(GraphQLString),
     },
     tel: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
     },
-    fax: {
-      type: new GraphQLNonNull(GraphQLString),
+    email: {
+      type: GraphQLString,
+    },
+    position: {
+      type: GraphQLString,
+    },
+    note: {
+      type: GraphQLString,
     },
   }),
 })
@@ -195,7 +224,7 @@ const Mutation = new GraphQLObjectType({
         resolve(_, {input}) {
           return db.models.client
             .upsert({
-              id: input.id, // ----> null is then insert, else update
+              id: input.id, // ----> if null then insert, else update
               code: input.code,
               name: input.name,
               tax_code: input.tax_code,
