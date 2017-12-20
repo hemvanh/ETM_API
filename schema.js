@@ -67,11 +67,17 @@ const Client = new GraphQLObjectType({
       },
       contacts: {
         type: new GraphQLList(Contact),
-        args: {
-          clientId: {type: GraphQLInt},
-        },
-        resolve(root, args) {
-          return db.models.contact.findAll({where: args})
+        resolve(client) {
+          // ------------------------------------if there's no association
+          // return db.models.contact.findAll({
+          //   where: {
+          //     clientId: {
+          //       [Op.eq]: client.id,
+          //     },
+          //   },
+          // })
+          // ------------------------------------else we can use auto-generated association func
+          return client.getContacts()
         },
       },
     }
@@ -182,23 +188,16 @@ const Mutation = new GraphQLObjectType({
         },
         resolve(_, {input}) {
           return db.models.client
-            .upsert(
-              {
-                id: input.id,
-                code: input.code,
-                name: input.name,
-                tax_code: input.tax_code,
-                invoice_addr: input.invoice_addr,
-                delivery_addr: input.delivery_addr,
-                tel: input.tel,
-                fax: input.fax,
-              }
-              // {
-              //   where: {
-              //     id: input.id,
-              //   },
-              // }
-            )
+            .upsert({
+              id: input.id, // ----> null is then insert, else update
+              code: input.code,
+              name: input.name,
+              tax_code: input.tax_code,
+              invoice_addr: input.invoice_addr,
+              delivery_addr: input.delivery_addr,
+              tel: input.tel,
+              fax: input.fax,
+            })
             .then(() => {
               return db.models.client.findById(input.id)
             })

@@ -11,7 +11,7 @@ app.use(
     schema: Schema,
     pretty: true,
     graphiql: true,
-  }),
+  })
 )
 
 app.listen(APP_PORT, () => {

@@ -37,8 +37,10 @@ const Contact = Conn.define('contact', {
   note: {type: Sequelize.STRING, allowNull: true},
 })
 
-Contact.belongsTo(Client)
-//Conn.authenticate()
+Client.hasMany(Contact)
+Conn.authenticate()
+
+export default Conn
 
 // Conn.sync({force: true})
 //   .then(() => {
@@ -145,5 +147,3 @@ Contact.belongsTo(Client)
 //   .catch(err => {
 //     console.log(err)
 //   })
-
-export default Conn
