@@ -271,6 +271,29 @@ const Mutation = new GraphQLObjectType({
           })
         },
       },
+      saveContact: {
+        type: Contact,
+        args: {
+          input: {
+            type: ContactInput,
+          },
+        },
+        resolve(_, {input}) {
+          return db.models.contact
+            .upsert({
+              id: input.id, // ----> if null then insert, else update
+              name: input.name,
+              tel: input.tel,
+              email: input.email,
+              position: input.position,
+              note: input.note,
+              clientId: input.clientId,
+            })
+            .then(() => {
+              return db.models.contact.findById(input.id)
+            })
+        },
+      },
     }
   },
 })
