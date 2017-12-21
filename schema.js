@@ -294,6 +294,23 @@ const Mutation = new GraphQLObjectType({
             })
         },
       },
+      deleteContact: {
+        type: GraphQLInt,
+        args: {
+          ids: {
+            type: new GraphQLList(GraphQLInt),
+          },
+        },
+        resolve(_, {ids}) {
+          return db.models.contact.destroy({
+            where: {
+              id: {
+                [Op.in]: ids,
+              },
+            },
+          })
+        },
+      },
     }
   },
 })
