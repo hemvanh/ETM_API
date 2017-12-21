@@ -125,6 +125,12 @@ const Contact = new GraphQLObjectType({
           return contact.note
         },
       },
+      clientId: {
+        type: GraphQLInt,
+        resolve(contact) {
+          return contact.clientId
+        },
+      },
     }
   },
 })
@@ -186,6 +192,9 @@ const ContactInput = new GraphQLInputObjectType({
     },
     note: {
       type: GraphQLString,
+    },
+    clientId: {
+      type: new GraphQLNonNull(GraphQLInt),
     },
   }),
 })
