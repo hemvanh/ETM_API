@@ -23,6 +23,13 @@ const Client = new GraphQLObjectType({
           return client.id
         },
       },
+      value: {
+        // for to use in q-select --> need to find another way, q-select still got sublabel + stamp
+        type: GraphQLInt,
+        resolve(client) {
+          return client.id
+        },
+      },
       code: {
         type: GraphQLString,
         resolve(client) {
@@ -30,6 +37,13 @@ const Client = new GraphQLObjectType({
         },
       },
       name: {
+        type: GraphQLString,
+        resolve(client) {
+          return client.name
+        },
+      },
+      label: {
+        // for to use in q-select
         type: GraphQLString,
         resolve(client) {
           return client.name
