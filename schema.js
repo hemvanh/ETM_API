@@ -271,15 +271,15 @@ const Mutation = new GraphQLObjectType({
       deleteClient: {
         type: GraphQLInt,
         args: {
-          ids: {
+          input: {
             type: new GraphQLList(GraphQLInt),
           },
         },
-        resolve(_, {ids}) {
+        resolve(_, {input}) {
           return db.models.client.destroy({
             where: {
               id: {
-                [Op.in]: ids,
+                [Op.in]: input,
               },
             },
           })
@@ -311,15 +311,15 @@ const Mutation = new GraphQLObjectType({
       deleteContact: {
         type: GraphQLInt,
         args: {
-          ids: {
+          input: {
             type: new GraphQLList(GraphQLInt),
           },
         },
-        resolve(_, {ids}) {
+        resolve(_, {input}) {
           return db.models.contact.destroy({
             where: {
               id: {
-                [Op.in]: ids,
+                [Op.in]: input,
               },
             },
           })
