@@ -8,7 +8,6 @@ const Conn = new Sequelize('etm_api', 'etm', 'lollipop', {
   // const Conn = new Sequelize('bb55689_api', 'bb55689_api', 'Lollipop!@#', {
   //   host: '116.193.77.72',
   dialect: 'mysql',
-  logging: false,
   operatorsAliases: Op, // use Sequelize.Op
   pool: {
     port: 3306,
@@ -18,6 +17,7 @@ const Conn = new Sequelize('etm_api', 'etm', 'lollipop', {
     idle: 20000,
   },
 })
+
 const Client = Conn.define('client', {
   code: {type: Sequelize.STRING, allowNull: false},
   name: {type: Sequelize.STRING, allowNull: false},
@@ -28,7 +28,26 @@ const Client = Conn.define('client', {
   fax: {type: Sequelize.STRING, allowNull: true},
 })
 
+const Contact = Conn.define('contact', {
+  name: {type: Sequelize.STRING, allowNull: false},
+  tel: {type: Sequelize.STRING, allowNull: true},
+  email: {type: Sequelize.STRING, allowNull: true},
+  position: {type: Sequelize.STRING, allowNull: true},
+  note: {type: Sequelize.STRING, allowNull: true},
+})
+
+Client.hasMany(Contact)
 Conn.authenticate()
+
+export default Conn
+
+// Conn.sync({force: true})
+//   .then(() => {
+//     console.log('Everything is OK !!!')
+//   })
+//   .catch(err => {
+//     console.error('DB Failure:', err)
+//   })
 
 // import mysql from 'mysql'
 // var Conn = mysql.createConnection({
@@ -127,5 +146,3 @@ Conn.authenticate()
 //   .catch(err => {
 //     console.log(err)
 //   })
-
-export default Conn
