@@ -36,8 +36,18 @@ const Contact = Conn.define('contact', {
   note: {type: Sequelize.STRING, allowNull: true},
 })
 
+const Supplier = Conn.define('supplier', {
+  code: {type: Sequelize.STRING, allowNull: false},
+  name: {type: Sequelize.STRING, allowNull: false},
+  tax_code: {type: Sequelize.STRING, allowNull: true},
+  invoice_addr: {type: Sequelize.STRING, allowNull: true},
+  tel: {type: Sequelize.STRING, allowNull: true},
+  fax: {type: Sequelize.STRING, allowNull: true},
+})
+
 Client.hasMany(Contact)
-Conn.authenticate()
+
+Conn.sync({fore: true})
 
 export default Conn
 
