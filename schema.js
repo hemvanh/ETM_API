@@ -98,6 +98,77 @@ const Client = new GraphQLObjectType({
   },
 })
 
+const Supplier = new GraphQLObjectType({
+  name: 'Supplier',
+  description: 'This is a Supplier',
+  fields: () => {
+    return {
+      id: {
+        type: GraphQLInt,
+        resolve(supplier) {
+          return supplier.id
+        },
+      },
+      value: {
+        // for to use in q-select --> need to find another way, q-select still got sublabel + stamp
+        type: GraphQLInt,
+        resolve(supplier) {
+          return supplier.id
+        },
+      },
+      code: {
+        type: GraphQLString,
+        resolve(supplier) {
+          return supplier.code
+        },
+      },
+      name: {
+        type: GraphQLString,
+        resolve(supplier) {
+          return supplier.name
+        },
+      },
+      label: {
+        // for to use in q-select
+        type: GraphQLString,
+        resolve(supplier) {
+          return supplier.name
+        },
+      },
+      tax_code: {
+        type: GraphQLString,
+        resolve(supplier) {
+          return supplier.tax_code
+        },
+      },
+      invoice_addr: {
+        type: GraphQLString,
+        resolve(supplier) {
+          return supplier.invoice_addr
+        },
+      },
+      tel: {
+        type: GraphQLString,
+        resolve(supplier) {
+          return supplier.tel
+        },
+      },
+      fax: {
+        type: GraphQLString,
+        resolve(supplier) {
+          return supplier.fax
+        },
+      },
+      contacts: {
+        type: new GraphQLList(Contact),
+        resolve(supplier) {
+          return supplier.getContacts()
+        },
+      },
+    }
+  },
+})
+
 const Contact = new GraphQLObjectType({
   name: 'Contact',
   description: 'This is a Contact',
@@ -145,6 +216,12 @@ const Contact = new GraphQLObjectType({
           return contact.clientId
         },
       },
+      supplierId: {
+        type: GraphQLInt,
+        resolve(contact) {
+          return contact.supplierId
+        },
+      },
     }
   },
 })
@@ -184,6 +261,38 @@ const ClientInput = new GraphQLInputObjectType({
   }),
 })
 
+const SupplierInput = new GraphQLInputObjectType({
+  name: 'SupplierInput',
+  description: 'This is Supplier Input Object',
+  fields: () => ({
+    id: {
+      // no need for GraphQLNonNull wrap, coz this Input's id is used in upsert later
+      type: GraphQLInt,
+    },
+    code: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    tax_code: {
+      type: GraphQLString,
+    },
+    invoice_addr: {
+      type: GraphQLString,
+    },
+    tel: {
+      type: GraphQLString,
+    },
+    fax: {
+      type: GraphQLString,
+    },
+    contacts: {
+      type: new GraphQLList(ContactInput),
+    },
+  }),
+})
+
 const ContactInput = new GraphQLInputObjectType({
   name: 'ContactInput',
   description: 'This is Contact Input Object',
@@ -208,7 +317,10 @@ const ContactInput = new GraphQLInputObjectType({
       type: GraphQLString,
     },
     clientId: {
-      type: new GraphQLNonNull(GraphQLInt),
+      type: GraphQLInt,
+    },
+    supplierId: {
+      type: GraphQLInt,
     },
   }),
 })
@@ -226,6 +338,13 @@ const Query = new GraphQLObjectType({
         },
         resolve(root, args) {
           return db.models.client.findAll({where: args})
+        },
+      },
+      getAllSuppliers: {
+        description: 'List all Supplier',
+        type: new GraphQLList(Supplier),
+        resolve() {
+          return db.models.supplier.findAll()
         },
       },
       getAllContacts: {
@@ -285,6 +404,46 @@ const Mutation = new GraphQLObjectType({
           })
         },
       },
+      saveSupplier: {
+        type: Supplier,
+        args: {
+          input: {
+            type: SupplierInput,
+          },
+        },
+        resolve(_, {input}) {
+          return db.models.supplier
+            .upsert({
+              id: input.id, // ----> if null then insert, else update
+              code: input.code,
+              name: input.name,
+              tax_code: input.tax_code,
+              invoice_addr: input.invoice_addr,
+              tel: input.tel,
+              fax: input.fax,
+            })
+            .then(() => {
+              return db.models.supplier.findById(input.id)
+            })
+        },
+      },
+      deleteSupplier: {
+        type: GraphQLInt,
+        args: {
+          input: {
+            type: new GraphQLList(GraphQLInt),
+          },
+        },
+        resolve(_, {input}) {
+          return db.models.supplier.destroy({
+            where: {
+              id: {
+                [Op.in]: input,
+              },
+            },
+          })
+        },
+      },
       saveContact: {
         type: Contact,
         args: {
@@ -302,6 +461,7 @@ const Mutation = new GraphQLObjectType({
               position: input.position,
               note: input.note,
               clientId: input.clientId,
+              supplierId: input.supplierId,
             })
             .then(() => {
               return db.models.contact.findById(input.id)
