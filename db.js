@@ -65,6 +65,7 @@ Product.belongsToMany(Supplier, {through: 'product_supplier'})
 Supplier.belongsToMany(Product, {through: 'product_supplier'})
 
 // Demo Data generation
+/*
 function randArr(upperLimit, amount) {
   var possibleNumbers = _.range(1, upperLimit)
   var shuffled = _.shuffle(possibleNumbers)
@@ -131,5 +132,5 @@ Conn.sync({force: true}).then(() => {
     })
   })
 })
-
+*/
 export default Conn

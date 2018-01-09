@@ -168,6 +168,109 @@ const Supplier = new GraphQLObjectType({
     }
   },
 })
+const Doc = new GraphQLObjectType({
+  name: 'Doc',
+  description: 'This is a Doc',
+  fields: () => {
+    return {
+      id: {
+        type: GraphQLInt,
+        resolve(doc) {
+          return doc.id
+        },
+      },
+      name: {
+        type: GraphQLString,
+        resolve(doc) {
+          return doc.name
+        },
+      },
+      link: {
+        type: GraphQLString,
+        resolve(doc) {
+          return doc.link
+        },
+      },
+    }
+  },
+})
+
+const Product = new GraphQLObjectType({
+  name: 'Product',
+  description: 'This is a Product',
+  fields: () => {
+    return {
+      id: {
+        type: GraphQLInt,
+        resolve(product) {
+          return product.id
+        },
+      },
+      value: {
+        // for to use in q-select --> need to find another way, q-select still got sublabel + stamp
+        type: GraphQLInt,
+        resolve(product) {
+          return product.id
+        },
+      },
+      label: {
+        // for to use in q-select
+        type: GraphQLString,
+        resolve(product) {
+          return product.name
+        },
+      },
+      name: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.name
+        },
+      },
+      brand_name: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.brand_name
+        },
+      },
+      model: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.model
+        },
+      },
+      specs: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.specs
+        },
+      },
+      buy: {
+        type: GraphQLInt,
+        resolve(product) {
+          return product.buy
+        },
+      },
+      sell: {
+        type: GraphQLInt,
+        resolve(product) {
+          return product.sell
+        },
+      },
+      suppliers: {
+        type: new GraphQLList(Supplier),
+        resolve(product) {
+          return product.getSuppliers()
+        },
+      },
+      docs: {
+        type: new GraphQLList(Doc),
+        resolve(product) {
+          return product.getDocs()
+        },
+      },
+    }
+  },
+})
 
 const Contact = new GraphQLObjectType({
   name: 'Contact',
@@ -293,6 +396,35 @@ const SupplierInput = new GraphQLInputObjectType({
   }),
 })
 
+const ProductInput = new GraphQLInputObjectType({
+  name: 'ProductInput',
+  description: 'This is Product Input Object',
+  fields: () => ({
+    id: {
+      // no need for GraphQLNonNull wrap, coz this Input's id is used in upsert later
+      type: GraphQLInt,
+    },
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    brand_name: {
+      type: GraphQLString,
+    },
+    model: {
+      type: GraphQLString,
+    },
+    specs: {
+      type: GraphQLString,
+    },
+    buy: {
+      type: GraphQLInt,
+    },
+    sell: {
+      type: GraphQLInt,
+    },
+  }),
+})
+
 const ContactInput = new GraphQLInputObjectType({
   name: 'ContactInput',
   description: 'This is Contact Input Object',
@@ -352,6 +484,13 @@ const Query = new GraphQLObjectType({
         type: new GraphQLList(Contact),
         resolve() {
           return db.models.contact.findAll()
+        },
+      },
+      getAllProducts: {
+        description: 'List all Products',
+        type: new GraphQLList(Product),
+        resolve() {
+          return db.models.product.findAll()
         },
       },
     }
@@ -477,6 +616,46 @@ const Mutation = new GraphQLObjectType({
         },
         resolve(_, {input}) {
           return db.models.contact.destroy({
+            where: {
+              id: {
+                [Op.in]: input,
+              },
+            },
+          })
+        },
+      },
+      saveProduct: {
+        type: Product,
+        args: {
+          input: {
+            type: ProductInput,
+          },
+        },
+        resolve(_, {input}) {
+          return db.models.product
+            .upsert({
+              id: input.id, // ----> if null then insert, else update
+              name: input.name,
+              brand_name: input.brand_name,
+              model: input.model,
+              specs: input.specs,
+              buy: input.buy,
+              sell: input.sell,
+            })
+            .then(() => {
+              return db.models.product.findById(input.id)
+            })
+        },
+      },
+      deleteProduct: {
+        type: GraphQLInt,
+        args: {
+          input: {
+            type: new GraphQLList(GraphQLInt),
+          },
+        },
+        resolve(_, {input}) {
+          return db.models.product.destroy({
             where: {
               id: {
                 [Op.in]: input,
