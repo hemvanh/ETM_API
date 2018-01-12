@@ -522,7 +522,8 @@ const Mutation = new GraphQLObjectType({
               fax: input.fax,
             })
             .then(() => {
-              return db.models.client.findById(input.id)
+              // TODO: look for the just created client id -> to update input.id
+              return input
             })
         },
       },
@@ -562,7 +563,8 @@ const Mutation = new GraphQLObjectType({
               fax: input.fax,
             })
             .then(() => {
-              return db.models.supplier.findById(input.id)
+              // TODO: look for the just created supplier id -> to update input.id
+              return input
             })
         },
       },
@@ -603,7 +605,8 @@ const Mutation = new GraphQLObjectType({
               supplierId: input.supplierId,
             })
             .then(() => {
-              return db.models.contact.findById(input.id)
+              // TODO: look for the just created contact id -> to update input.id
+              return input
             })
         },
       },
@@ -643,7 +646,8 @@ const Mutation = new GraphQLObjectType({
               sell: input.sell,
             })
             .then(() => {
-              return db.models.product.findById(input.id)
+              // TODO: look for the just created product id -> to update input.id
+              return input
             })
         },
       },
