@@ -13,6 +13,7 @@ import db from './db'
 import Sequelize from 'sequelize'
 const Op = Sequelize.Op
 
+// ############################################################################################################## OBJECT
 const Client = new GraphQLObjectType({
   name: 'Client',
   description: 'This is a Client',
@@ -169,32 +170,6 @@ const Supplier = new GraphQLObjectType({
     }
   },
 })
-const Doc = new GraphQLObjectType({
-  name: 'Doc',
-  description: 'This is a Doc',
-  fields: () => {
-    return {
-      id: {
-        type: GraphQLInt,
-        resolve(doc) {
-          return doc.id
-        },
-      },
-      name: {
-        type: GraphQLString,
-        resolve(doc) {
-          return doc.name
-        },
-      },
-      link: {
-        type: GraphQLString,
-        resolve(doc) {
-          return doc.link
-        },
-      },
-    }
-  },
-})
 
 const Product = new GraphQLObjectType({
   name: 'Product',
@@ -330,6 +305,34 @@ const Contact = new GraphQLObjectType({
   },
 })
 
+const Doc = new GraphQLObjectType({
+  name: 'Doc',
+  description: 'This is a Doc',
+  fields: () => {
+    return {
+      id: {
+        type: GraphQLInt,
+        resolve(doc) {
+          return doc.id
+        },
+      },
+      name: {
+        type: GraphQLString,
+        resolve(doc) {
+          return doc.name
+        },
+      },
+      link: {
+        type: GraphQLString,
+        resolve(doc) {
+          return doc.link
+        },
+      },
+    }
+  },
+})
+
+// ######################################################################################################## INPUT OBJECT
 const ClientInput = new GraphQLInputObjectType({
   name: 'ClientInput',
   description: 'This is Client Input Object',
@@ -489,6 +492,7 @@ const ContactInput = new GraphQLInputObjectType({
   }),
 })
 
+// ############################################################################################################### QUERY
 const Query = new GraphQLObjectType({
   name: 'RootQuery',
   description: 'This is the ROOT Query',
@@ -511,13 +515,6 @@ const Query = new GraphQLObjectType({
           return db.models.supplier.findAll()
         },
       },
-      getAllContacts: {
-        description: 'List all Contacts',
-        type: new GraphQLList(Contact),
-        resolve() {
-          return db.models.contact.findAll()
-        },
-      },
       getAllProducts: {
         description: 'List all Products',
         type: new GraphQLList(Product),
@@ -525,10 +522,25 @@ const Query = new GraphQLObjectType({
           return db.models.product.findAll()
         },
       },
+      getAllContacts: {
+        description: 'List all Contacts',
+        type: new GraphQLList(Contact),
+        resolve() {
+          return db.models.contact.findAll()
+        },
+      },
+      getAllDocs: {
+        description: 'List all Docs',
+        type: new GraphQLList(Doc),
+        resolve() {
+          return db.models.doc.findAll()
+        },
+      },
     }
   },
 })
 
+// ############################################################################################################ MUTATION
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   description: 'Save/Add/Delete a Client',
