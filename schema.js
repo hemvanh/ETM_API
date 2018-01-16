@@ -8,6 +8,7 @@ import {
   GraphQLNonNull,
 } from 'graphql'
 
+// import _ from 'lodash'
 import db from './db'
 import Sequelize from 'sequelize'
 const Op = Sequelize.Op
@@ -168,6 +169,109 @@ const Supplier = new GraphQLObjectType({
     }
   },
 })
+const Doc = new GraphQLObjectType({
+  name: 'Doc',
+  description: 'This is a Doc',
+  fields: () => {
+    return {
+      id: {
+        type: GraphQLInt,
+        resolve(doc) {
+          return doc.id
+        },
+      },
+      name: {
+        type: GraphQLString,
+        resolve(doc) {
+          return doc.name
+        },
+      },
+      link: {
+        type: GraphQLString,
+        resolve(doc) {
+          return doc.link
+        },
+      },
+    }
+  },
+})
+
+const Product = new GraphQLObjectType({
+  name: 'Product',
+  description: 'This is a Product',
+  fields: () => {
+    return {
+      id: {
+        type: GraphQLInt,
+        resolve(product) {
+          return product.id
+        },
+      },
+      value: {
+        // for to use in q-select --> need to find another way, q-select still got sublabel + stamp
+        type: GraphQLInt,
+        resolve(product) {
+          return product.id
+        },
+      },
+      label: {
+        // for to use in q-select
+        type: GraphQLString,
+        resolve(product) {
+          return product.name
+        },
+      },
+      name: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.name
+        },
+      },
+      brand_name: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.brand_name
+        },
+      },
+      model: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.model
+        },
+      },
+      specs: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.specs
+        },
+      },
+      buy: {
+        type: GraphQLInt,
+        resolve(product) {
+          return product.buy
+        },
+      },
+      sell: {
+        type: GraphQLInt,
+        resolve(product) {
+          return product.sell
+        },
+      },
+      suppliers: {
+        type: new GraphQLList(Supplier),
+        resolve(product) {
+          return product.getSuppliers()
+        },
+      },
+      docs: {
+        type: new GraphQLList(Doc),
+        resolve(product) {
+          return product.getDocs()
+        },
+      },
+    }
+  },
+})
 
 const Contact = new GraphQLObjectType({
   name: 'Contact',
@@ -269,6 +373,15 @@ const SupplierInput = new GraphQLInputObjectType({
       // no need for GraphQLNonNull wrap, coz this Input's id is used in upsert later
       type: GraphQLInt,
     },
+    // --- start -> due to the fact that the JSON request send extra props,
+    // this is just to make the SupplierInput to be valid
+    value: {
+      type: GraphQLInt,
+    },
+    label: {
+      type: GraphQLString,
+    },
+    // --- end
     code: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -289,6 +402,57 @@ const SupplierInput = new GraphQLInputObjectType({
     },
     contacts: {
       type: new GraphQLList(ContactInput),
+    },
+  }),
+})
+
+const DocInput = new GraphQLInputObjectType({
+  name: 'DocInput',
+  description: 'This is Doc Input Object',
+  fields: () => ({
+    id: {
+      type: GraphQLInt,
+    },
+    name: {
+      type: GraphQLString,
+    },
+    link: {
+      type: GraphQLString,
+    },
+  }),
+})
+
+const ProductInput = new GraphQLInputObjectType({
+  name: 'ProductInput',
+  description: 'This is Product Input Object',
+  fields: () => ({
+    id: {
+      // no need for GraphQLNonNull wrap, coz this Input's id is used in upsert later
+      type: GraphQLInt,
+    },
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    brand_name: {
+      type: GraphQLString,
+    },
+    model: {
+      type: GraphQLString,
+    },
+    specs: {
+      type: GraphQLString,
+    },
+    buy: {
+      type: GraphQLInt,
+    },
+    sell: {
+      type: GraphQLInt,
+    },
+    suppliers: {
+      type: new GraphQLList(SupplierInput),
+    },
+    docs: {
+      type: new GraphQLList(DocInput),
     },
   }),
 })
@@ -354,6 +518,13 @@ const Query = new GraphQLObjectType({
           return db.models.contact.findAll()
         },
       },
+      getAllProducts: {
+        description: 'List all Products',
+        type: new GraphQLList(Product),
+        resolve() {
+          return db.models.product.findAll()
+        },
+      },
     }
   },
 })
@@ -370,21 +541,11 @@ const Mutation = new GraphQLObjectType({
             type: ClientInput,
           },
         },
-        resolve(_, {input}) {
-          return db.models.client
-            .upsert({
-              id: input.id, // ----> if null then insert, else update
-              code: input.code,
-              name: input.name,
-              tax_code: input.tax_code,
-              invoice_addr: input.invoice_addr,
-              delivery_addr: input.delivery_addr,
-              tel: input.tel,
-              fax: input.fax,
-            })
-            .then(() => {
-              return db.models.client.findById(input.id)
-            })
+        resolve(__, {input}) {
+          return db.models.client.upsert(input).then(() => {
+            // TODO: look for the just created client id -> to update input.id
+            return input
+          })
         },
       },
       deleteClient: {
@@ -394,7 +555,7 @@ const Mutation = new GraphQLObjectType({
             type: new GraphQLList(GraphQLInt),
           },
         },
-        resolve(_, {input}) {
+        resolve(__, {input}) {
           return db.models.client.destroy({
             where: {
               id: {
@@ -411,20 +572,11 @@ const Mutation = new GraphQLObjectType({
             type: SupplierInput,
           },
         },
-        resolve(_, {input}) {
-          return db.models.supplier
-            .upsert({
-              id: input.id, // ----> if null then insert, else update
-              code: input.code,
-              name: input.name,
-              tax_code: input.tax_code,
-              invoice_addr: input.invoice_addr,
-              tel: input.tel,
-              fax: input.fax,
-            })
-            .then(() => {
-              return db.models.supplier.findById(input.id)
-            })
+        resolve(__, {input}) {
+          return db.models.supplier.upsert(input).then(() => {
+            // TODO: look for the just created supplier id -> to update input.id
+            return input
+          })
         },
       },
       deleteSupplier: {
@@ -434,7 +586,7 @@ const Mutation = new GraphQLObjectType({
             type: new GraphQLList(GraphQLInt),
           },
         },
-        resolve(_, {input}) {
+        resolve(__, {input}) {
           return db.models.supplier.destroy({
             where: {
               id: {
@@ -451,21 +603,11 @@ const Mutation = new GraphQLObjectType({
             type: ContactInput,
           },
         },
-        resolve(_, {input}) {
-          return db.models.contact
-            .upsert({
-              id: input.id, // ----> if null then insert, else update
-              name: input.name,
-              tel: input.tel,
-              email: input.email,
-              position: input.position,
-              note: input.note,
-              clientId: input.clientId,
-              supplierId: input.supplierId,
-            })
-            .then(() => {
-              return db.models.contact.findById(input.id)
-            })
+        resolve(__, {input}) {
+          return db.models.contact.upsert(input).then(() => {
+            // TODO: look for the just created contact id -> to update input.id
+            return input
+          })
         },
       },
       deleteContact: {
@@ -475,8 +617,50 @@ const Mutation = new GraphQLObjectType({
             type: new GraphQLList(GraphQLInt),
           },
         },
-        resolve(_, {input}) {
+        resolve(__, {input}) {
           return db.models.contact.destroy({
+            where: {
+              id: {
+                [Op.in]: input,
+              },
+            },
+          })
+        },
+      },
+      saveProduct: {
+        type: Product,
+        args: {
+          input: {
+            type: ProductInput,
+          },
+        },
+        resolve(__, {input}) {
+          if (!input.id) {
+            // create
+            return db.models.product.create(input).then(product => {
+              product.setSuppliers(input.suppliers.map(sup => sup.id)) // -> no need to check empty before mapping -> able to remove all suppliers
+              return product
+            })
+          } else {
+            // update
+            return db.models.product.upsert(input).then(() => {
+              db.models.product.findAll(input).then(pro => {
+                pro[0].setSuppliers(input.suppliers.map(sup => sup.id)) // -> no need to check empty before mapping -> able to remove all suppliers
+              })
+              return input
+            })
+          }
+        },
+      },
+      deleteProduct: {
+        type: GraphQLInt,
+        args: {
+          input: {
+            type: new GraphQLList(GraphQLInt),
+          },
+        },
+        resolve(__, {input}) {
+          return db.models.product.destroy({
             where: {
               id: {
                 [Op.in]: input,
