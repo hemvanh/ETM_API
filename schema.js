@@ -439,6 +439,9 @@ const DocInput = new GraphQLInputObjectType({
     link: {
       type: GraphQLString,
     },
+    productId: {
+      type: GraphQLInt,
+    },
   }),
 })
 
@@ -625,37 +628,6 @@ const Mutation = new GraphQLObjectType({
           })
         },
       },
-      saveContact: {
-        type: Contact,
-        args: {
-          input: {
-            type: ContactInput,
-          },
-        },
-        resolve(__, {input}) {
-          return db.models.contact.upsert(input).then(() => {
-            // TODO: look for the just created contact id -> to update input.id
-            return input
-          })
-        },
-      },
-      deleteContact: {
-        type: GraphQLInt,
-        args: {
-          input: {
-            type: new GraphQLList(GraphQLInt),
-          },
-        },
-        resolve(__, {input}) {
-          return db.models.contact.destroy({
-            where: {
-              id: {
-                [Op.in]: input,
-              },
-            },
-          })
-        },
-      },
       saveProduct: {
         type: Product,
         args: {
@@ -690,6 +662,68 @@ const Mutation = new GraphQLObjectType({
         },
         resolve(__, {input}) {
           return db.models.product.destroy({
+            where: {
+              id: {
+                [Op.in]: input,
+              },
+            },
+          })
+        },
+      },
+      saveContact: {
+        type: Contact,
+        args: {
+          input: {
+            type: ContactInput,
+          },
+        },
+        resolve(__, {input}) {
+          return db.models.contact.upsert(input).then(() => {
+            // TODO: look for the just created contact id -> to update input.id
+            return input
+          })
+        },
+      },
+      deleteContact: {
+        type: GraphQLInt,
+        args: {
+          input: {
+            type: new GraphQLList(GraphQLInt),
+          },
+        },
+        resolve(__, {input}) {
+          return db.models.contact.destroy({
+            where: {
+              id: {
+                [Op.in]: input,
+              },
+            },
+          })
+        },
+      },
+      saveDoc: {
+        type: Doc,
+        args: {
+          input: {
+            type: DocInput,
+          },
+        },
+        resolve(__, {input}) {
+          return db.models.doc.upsert(input).then(() => {
+            // TODO: look for the just created doc id -> to update input.id
+            return input
+          })
+        },
+      },
+      deleteDoc: {
+        type: GraphQLInt,
+        args: {
+          input: {
+            type: new GraphQLList(GraphQLInt),
+          },
+        },
+        resolve(__, {input}) {
+          return db.models.doc.destroy({
             where: {
               id: {
                 [Op.in]: input,
