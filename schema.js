@@ -182,20 +182,6 @@ const Product = new GraphQLObjectType({
           return product.id
         },
       },
-      value: {
-        // for to use in q-select --> need to find another way, q-select still got sublabel + stamp
-        type: GraphQLInt,
-        resolve(product) {
-          return product.id
-        },
-      },
-      label: {
-        // for to use in q-select
-        type: GraphQLString,
-        resolve(product) {
-          return product.name
-        },
-      },
       name: {
         type: GraphQLString,
         resolve(product) {
@@ -242,6 +228,31 @@ const Product = new GraphQLObjectType({
         type: new GraphQLList(Doc),
         resolve(product) {
           return product.getDocs()
+        },
+      },
+      // --> for to use in q-select --> need to find another way, q-select still got sublabel + stamp
+      value: {
+        type: GraphQLInt,
+        resolve(product) {
+          return product.id
+        },
+      },
+      label: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.name
+        },
+      },
+      sublabel: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.brand_name
+        },
+      },
+      stamp: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.model
         },
       },
     }
@@ -326,6 +337,12 @@ const Doc = new GraphQLObjectType({
         type: GraphQLString,
         resolve(doc) {
           return doc.link
+        },
+      },
+      productId: {
+        type: GraphQLInt,
+        resolve(doc) {
+          return doc.productId
         },
       },
     }
