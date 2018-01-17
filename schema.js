@@ -13,6 +13,7 @@ import db from './db'
 import Sequelize from 'sequelize'
 const Op = Sequelize.Op
 
+// ############################################################################################################## OBJECT
 const Client = new GraphQLObjectType({
   name: 'Client',
   description: 'This is a Client',
@@ -169,32 +170,6 @@ const Supplier = new GraphQLObjectType({
     }
   },
 })
-const Doc = new GraphQLObjectType({
-  name: 'Doc',
-  description: 'This is a Doc',
-  fields: () => {
-    return {
-      id: {
-        type: GraphQLInt,
-        resolve(doc) {
-          return doc.id
-        },
-      },
-      name: {
-        type: GraphQLString,
-        resolve(doc) {
-          return doc.name
-        },
-      },
-      link: {
-        type: GraphQLString,
-        resolve(doc) {
-          return doc.link
-        },
-      },
-    }
-  },
-})
 
 const Product = new GraphQLObjectType({
   name: 'Product',
@@ -205,20 +180,6 @@ const Product = new GraphQLObjectType({
         type: GraphQLInt,
         resolve(product) {
           return product.id
-        },
-      },
-      value: {
-        // for to use in q-select --> need to find another way, q-select still got sublabel + stamp
-        type: GraphQLInt,
-        resolve(product) {
-          return product.id
-        },
-      },
-      label: {
-        // for to use in q-select
-        type: GraphQLString,
-        resolve(product) {
-          return product.name
         },
       },
       name: {
@@ -267,6 +228,31 @@ const Product = new GraphQLObjectType({
         type: new GraphQLList(Doc),
         resolve(product) {
           return product.getDocs()
+        },
+      },
+      // --> for to use in q-select --> need to find another way, q-select still got sublabel + stamp
+      value: {
+        type: GraphQLInt,
+        resolve(product) {
+          return product.id
+        },
+      },
+      label: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.name
+        },
+      },
+      sublabel: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.brand_name
+        },
+      },
+      stamp: {
+        type: GraphQLString,
+        resolve(product) {
+          return product.model
         },
       },
     }
@@ -330,6 +316,40 @@ const Contact = new GraphQLObjectType({
   },
 })
 
+const Doc = new GraphQLObjectType({
+  name: 'Doc',
+  description: 'This is a Doc',
+  fields: () => {
+    return {
+      id: {
+        type: GraphQLInt,
+        resolve(doc) {
+          return doc.id
+        },
+      },
+      name: {
+        type: GraphQLString,
+        resolve(doc) {
+          return doc.name
+        },
+      },
+      link: {
+        type: GraphQLString,
+        resolve(doc) {
+          return doc.link
+        },
+      },
+      productId: {
+        type: GraphQLInt,
+        resolve(doc) {
+          return doc.productId
+        },
+      },
+    }
+  },
+})
+
+// ######################################################################################################## INPUT OBJECT
 const ClientInput = new GraphQLInputObjectType({
   name: 'ClientInput',
   description: 'This is Client Input Object',
@@ -419,6 +439,9 @@ const DocInput = new GraphQLInputObjectType({
     link: {
       type: GraphQLString,
     },
+    productId: {
+      type: GraphQLInt,
+    },
   }),
 })
 
@@ -489,6 +512,7 @@ const ContactInput = new GraphQLInputObjectType({
   }),
 })
 
+// ############################################################################################################### QUERY
 const Query = new GraphQLObjectType({
   name: 'RootQuery',
   description: 'This is the ROOT Query',
@@ -511,13 +535,6 @@ const Query = new GraphQLObjectType({
           return db.models.supplier.findAll()
         },
       },
-      getAllContacts: {
-        description: 'List all Contacts',
-        type: new GraphQLList(Contact),
-        resolve() {
-          return db.models.contact.findAll()
-        },
-      },
       getAllProducts: {
         description: 'List all Products',
         type: new GraphQLList(Product),
@@ -525,10 +542,25 @@ const Query = new GraphQLObjectType({
           return db.models.product.findAll()
         },
       },
+      getAllContacts: {
+        description: 'List all Contacts',
+        type: new GraphQLList(Contact),
+        resolve() {
+          return db.models.contact.findAll()
+        },
+      },
+      getAllDocs: {
+        description: 'List all Docs',
+        type: new GraphQLList(Doc),
+        resolve() {
+          return db.models.doc.findAll()
+        },
+      },
     }
   },
 })
 
+// ############################################################################################################ MUTATION
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   description: 'Save/Add/Delete a Client',
@@ -596,37 +628,6 @@ const Mutation = new GraphQLObjectType({
           })
         },
       },
-      saveContact: {
-        type: Contact,
-        args: {
-          input: {
-            type: ContactInput,
-          },
-        },
-        resolve(__, {input}) {
-          return db.models.contact.upsert(input).then(() => {
-            // TODO: look for the just created contact id -> to update input.id
-            return input
-          })
-        },
-      },
-      deleteContact: {
-        type: GraphQLInt,
-        args: {
-          input: {
-            type: new GraphQLList(GraphQLInt),
-          },
-        },
-        resolve(__, {input}) {
-          return db.models.contact.destroy({
-            where: {
-              id: {
-                [Op.in]: input,
-              },
-            },
-          })
-        },
-      },
       saveProduct: {
         type: Product,
         args: {
@@ -661,6 +662,68 @@ const Mutation = new GraphQLObjectType({
         },
         resolve(__, {input}) {
           return db.models.product.destroy({
+            where: {
+              id: {
+                [Op.in]: input,
+              },
+            },
+          })
+        },
+      },
+      saveContact: {
+        type: Contact,
+        args: {
+          input: {
+            type: ContactInput,
+          },
+        },
+        resolve(__, {input}) {
+          return db.models.contact.upsert(input).then(() => {
+            // TODO: look for the just created contact id -> to update input.id
+            return input
+          })
+        },
+      },
+      deleteContact: {
+        type: GraphQLInt,
+        args: {
+          input: {
+            type: new GraphQLList(GraphQLInt),
+          },
+        },
+        resolve(__, {input}) {
+          return db.models.contact.destroy({
+            where: {
+              id: {
+                [Op.in]: input,
+              },
+            },
+          })
+        },
+      },
+      saveDoc: {
+        type: Doc,
+        args: {
+          input: {
+            type: DocInput,
+          },
+        },
+        resolve(__, {input}) {
+          return db.models.doc.upsert(input).then(() => {
+            // TODO: look for the just created doc id -> to update input.id
+            return input
+          })
+        },
+      },
+      deleteDoc: {
+        type: GraphQLInt,
+        args: {
+          input: {
+            type: new GraphQLList(GraphQLInt),
+          },
+        },
+        resolve(__, {input}) {
+          return db.models.doc.destroy({
             where: {
               id: {
                 [Op.in]: input,
