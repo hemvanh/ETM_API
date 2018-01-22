@@ -1,11 +1,21 @@
-import Sequelize from 'sequelize'
+'use strict';
 
-const Op = Sequelize.Op
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _sequelize = require('sequelize');
+
+var _sequelize2 = _interopRequireDefault(_sequelize);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Op = _sequelize2.default.Op;
 // const Conn = new Sequelize('etm_api', 'etm', 'lollipop', {
 //   host: 'etm.c0f9gwleomit.ap-southeast-1.rds.amazonaws.com',
 // const Conn = new Sequelize('dev_db', 'root', 'lol', {
 //   host: 'localhost',
-const Conn = new Sequelize('heroku_549e0e0a0b2b3cc', 'b4997dce2b3106', '96d88204', {
+var Conn = new _sequelize2.default('heroku_549e0e0a0b2b3cc', 'b4997dce2b3106', '96d88204', {
   host: 'us-cdbr-iron-east-05.cleardb.net',
   dialect: 'mysql',
   operatorsAliases: Op, // use Sequelize.Op
@@ -14,55 +24,55 @@ const Conn = new Sequelize('heroku_549e0e0a0b2b3cc', 'b4997dce2b3106', '96d88204
     max: 5,
     min: 1,
     accquire: 60000,
-    idle: 20000,
-  },
-})
+    idle: 20000
+  }
+});
 
-const Client = Conn.define('client', {
-  code: {type: Sequelize.STRING, allowNull: false},
-  name: {type: Sequelize.STRING, allowNull: false},
-  tax_code: {type: Sequelize.STRING, allowNull: true},
-  invoice_addr: {type: Sequelize.STRING, allowNull: true},
-  delivery_addr: {type: Sequelize.STRING, allowNull: true},
-  tel: {type: Sequelize.STRING, allowNull: true},
-  fax: {type: Sequelize.STRING, allowNull: true},
-})
+var Client = Conn.define('client', {
+  code: { type: _sequelize2.default.STRING, allowNull: false },
+  name: { type: _sequelize2.default.STRING, allowNull: false },
+  tax_code: { type: _sequelize2.default.STRING, allowNull: true },
+  invoice_addr: { type: _sequelize2.default.STRING, allowNull: true },
+  delivery_addr: { type: _sequelize2.default.STRING, allowNull: true },
+  tel: { type: _sequelize2.default.STRING, allowNull: true },
+  fax: { type: _sequelize2.default.STRING, allowNull: true }
+});
 
-const Contact = Conn.define('contact', {
-  name: {type: Sequelize.STRING, allowNull: false},
-  tel: {type: Sequelize.STRING, allowNull: true},
-  email: {type: Sequelize.STRING, allowNull: true},
-  position: {type: Sequelize.STRING, allowNull: true},
-  note: {type: Sequelize.STRING, allowNull: true},
-})
+var Contact = Conn.define('contact', {
+  name: { type: _sequelize2.default.STRING, allowNull: false },
+  tel: { type: _sequelize2.default.STRING, allowNull: true },
+  email: { type: _sequelize2.default.STRING, allowNull: true },
+  position: { type: _sequelize2.default.STRING, allowNull: true },
+  note: { type: _sequelize2.default.STRING, allowNull: true }
+});
 
-const Supplier = Conn.define('supplier', {
-  code: {type: Sequelize.STRING, allowNull: false},
-  name: {type: Sequelize.STRING, allowNull: false},
-  tax_code: {type: Sequelize.STRING, allowNull: true},
-  invoice_addr: {type: Sequelize.STRING, allowNull: true},
-  tel: {type: Sequelize.STRING, allowNull: true},
-  fax: {type: Sequelize.STRING, allowNull: true},
-})
+var Supplier = Conn.define('supplier', {
+  code: { type: _sequelize2.default.STRING, allowNull: false },
+  name: { type: _sequelize2.default.STRING, allowNull: false },
+  tax_code: { type: _sequelize2.default.STRING, allowNull: true },
+  invoice_addr: { type: _sequelize2.default.STRING, allowNull: true },
+  tel: { type: _sequelize2.default.STRING, allowNull: true },
+  fax: { type: _sequelize2.default.STRING, allowNull: true }
+});
 
-const Product = Conn.define('product', {
-  name: {type: Sequelize.STRING, allowNull: false},
-  brand_name: {type: Sequelize.STRING, allowNull: true},
-  model: {type: Sequelize.STRING, allowNull: true},
-  specs: {type: Sequelize.TEXT, allowNull: true},
-  buy: {type: Sequelize.INTEGER, allowNull: true},
-  sell: {type: Sequelize.INTEGER, allowNull: true},
-})
-const Doc = Conn.define('doc', {
-  name: {type: Sequelize.STRING, allowNull: false},
-  link: {type: Sequelize.STRING, allowNull: false},
-})
+var Product = Conn.define('product', {
+  name: { type: _sequelize2.default.STRING, allowNull: false },
+  brand_name: { type: _sequelize2.default.STRING, allowNull: true },
+  model: { type: _sequelize2.default.STRING, allowNull: true },
+  specs: { type: _sequelize2.default.TEXT, allowNull: true },
+  buy: { type: _sequelize2.default.INTEGER, allowNull: true },
+  sell: { type: _sequelize2.default.INTEGER, allowNull: true }
+});
+var Doc = Conn.define('doc', {
+  name: { type: _sequelize2.default.STRING, allowNull: false },
+  link: { type: _sequelize2.default.STRING, allowNull: false }
+});
 
-Client.hasMany(Contact)
-Supplier.hasMany(Contact)
-Product.hasMany(Doc)
-Product.belongsToMany(Supplier, {through: 'product_supplier'})
-Supplier.belongsToMany(Product, {through: 'product_supplier'})
+Client.hasMany(Contact);
+Supplier.hasMany(Contact);
+Product.hasMany(Doc);
+Product.belongsToMany(Supplier, { through: 'product_supplier' });
+Supplier.belongsToMany(Product, { through: 'product_supplier' });
 
 // ###############################################################################################  Demo Data generation
 // import _ from 'lodash'
@@ -134,4 +144,4 @@ Supplier.belongsToMany(Product, {through: 'product_supplier'})
 //   })
 // })
 
-export default Conn
+exports.default = Conn;
