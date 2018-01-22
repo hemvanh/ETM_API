@@ -1,5 +1,6 @@
 var gulp = require('gulp')
 var babel = require('gulp-babel')
+var rename = require('gulp-rename')
 
 gulp.task('db', function() {
   return gulp
@@ -21,6 +22,9 @@ gulp.task('server', function() {
 })
 
 gulp.task('package', function() {
-  return gulp.src('dist/package.json').pipe(gulp.dest('../pwaETM/dist'))
+  return gulp
+    .src('dist.json')
+    .pipe(rename('package.json'))
+    .pipe(gulp.dest('../pwaETM/dist'))
 })
 gulp.task('default', ['db', 'schema', 'server', 'package'])
